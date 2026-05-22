@@ -1,10 +1,9 @@
 'use client';
-import React, { useEffect } from 'react';
-
+import React from 'react';
 import AppLayout from '@/components/AppLayout';
-import CustomerOverviewContent from './components/CustomerOverviewContent';
+import CustomerOverviewContent from '../components/CustomerOverviewContent';
 
-export default function CustomerDashboardPage() {
+export default function CustomerOverviewPage() {
   return (
     <AppLayout role="customer" currentPath="/customer-dashboard/overview">
       <CustomerOverviewContent />

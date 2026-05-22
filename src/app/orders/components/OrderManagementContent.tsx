@@ -102,6 +102,18 @@ export default function OrderManagementContent() {
 
       if (error) throw error;
 
+      // Log history event
+      Promise.resolve(supabase.from('order_history_logs').insert({
+        order_id: orderId,
+        event_type: 'status_updated',
+        title: `Status updated to ${STATUS_LABELS[newStatus] || newStatus}`,
+        description: `Order moved to ${STATUS_LABELS[newStatus] || newStatus} stage`,
+        old_status: activeOrder?.extended_status || activeOrder?.status || '',
+        new_status: newStatus,
+        queue_position: activeOrder?.queue_position || null,
+        performed_by: null,
+      })).catch(() => {}); // Non-blocking
+
       // Notify customer
       if (activeOrder?.customer_id) {
         await supabase.from('notifications').insert({

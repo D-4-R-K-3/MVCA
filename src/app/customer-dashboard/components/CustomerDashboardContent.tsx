@@ -4,19 +4,19 @@ import React, { useState, useEffect } from 'react';
 import OrderStatusTimeline from './OrderStatusTimeline';
 import PhotoGallery from './PhotoGallery';
 import ProductDetail3D from './ProductDetail3D';
-import ChatSystem from '@/components/ui/ChatSystem';
+import InquirySystem from '@/components/ui/InquirySystem';
 import { Package, Image, Box, Loader2, MessageSquare, ShoppingBag } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
 
-type Tab = 'timeline' | 'gallery' | 'product' | 'chat';
+type Tab = 'timeline' | 'gallery' | 'product' | 'inquiry';
 
 const tabs: { key: Tab; label: string; icon: React.ElementType }[] = [
   { key: 'timeline', label: 'Order Queue', icon: Package },
   { key: 'gallery', label: 'Photo Gallery', icon: Image },
   { key: 'product', label: '3D Preview & AR', icon: Box },
-  { key: 'chat', label: 'Inquiry', icon: MessageSquare },
+  { key: 'inquiry', label: 'Inquiry', icon: MessageSquare },
 ];
 
 export default function CustomerDashboardContent() {
@@ -74,7 +74,7 @@ export default function CustomerDashboardContent() {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Order History</h1>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Order Queue</h1>
           <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">
             {order ? `Latest: #${order.order_ref} · ${order.product_name}` : 'No active orders found'}
           </p>
@@ -127,7 +127,7 @@ export default function CustomerDashboardContent() {
           {activeTab === 'timeline' && <OrderStatusTimeline order={order} />}
           {activeTab === 'gallery' && <PhotoGallery orderId={order.id} />}
           {activeTab === 'product' && <ProductDetail3D order={order} />}
-          {activeTab === 'chat' && <ChatSystem userRole="customer" preselectedOrderId={order.id} />}
+          {activeTab === 'inquiry' && <InquirySystem userRole="customer" />}
         </>
       )}
     </div>
