@@ -1,13 +1,12 @@
 'use client';
-
 import React from 'react';
 import AppLayout from '@/components/AppLayout';
 import InquirySystem from '@/components/ui/InquirySystem';
 
-export default function SupportPage() {
+export default function AdminInquiryPage() {
   return (
-    <AppLayout role="customer" currentPath="/support">
-      <InquirySystem userRole="customer" />
+    <AppLayout role="admin" currentPath="/admin/inquiry">
+      <InquirySystem userRole="admin" />
     </AppLayout>
   );
 }

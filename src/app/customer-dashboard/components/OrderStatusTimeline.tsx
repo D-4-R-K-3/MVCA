@@ -1,6 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, Loader2, Lock, Clock, ChevronDown, ChevronUp } from 'lucide-react';
+import { CheckCircle2, Loader2, Lock, Clock, ChevronDown, ChevronUp, Hash } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
 interface OrderStatusTimelineProps {
@@ -17,6 +17,22 @@ const STAGE_LABELS: Record<string, string> = {
   finishing: 'Finishing',
   quality_check: 'Quality Check',
   shipping: 'Ready to Ship',
+};
+
+const EXTENDED_STATUS_LABELS: Record<string, string> = {
+  pending: 'Pending',
+  confirmed: 'Confirmed',
+  designing: 'Designing',
+  material_preparation: 'Material Preparation',
+  cutting: 'Cutting',
+  assembly: 'Assembly',
+  sanding: 'Sanding',
+  finishing: 'Finishing',
+  quality_inspection: 'Quality Inspection',
+  ready_for_delivery: 'Ready for Delivery',
+  delivered: 'Delivered',
+  cancelled: 'Cancelled',
+  in_production: 'In Production',
 };
 
 const stagePalette: Record<string, { text: string; badge: string; track: string; icon: string }> = {
@@ -81,6 +97,9 @@ export default function OrderStatusTimeline({ order }: OrderStatusTimelineProps)
     return stages.find((s) => s.stage_name === stageName);
   };
 
+  const extendedStatus = order?.extended_status || order?.status || 'pending';
+  const extendedStatusLabel = EXTENDED_STATUS_LABELS[extendedStatus] || extendedStatus;
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -99,6 +118,21 @@ export default function OrderStatusTimeline({ order }: OrderStatusTimelineProps)
         <div className="flex-1 min-w-0">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">{order?.product_name || 'Your Order'}</h2>
           <p className="mt-0.5 text-sm text-slate-500 dark:text-slate-400">Order #{order?.order_ref} · Placed {order?.created_at ? new Date(order.created_at).toLocaleDateString() : '—'}</p>
+          
+          {/* Queue Position & Status */}
+          <div className="flex items-center gap-3 mt-2 flex-wrap">
+            {order?.queue_position && (
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700 dark:border-blue-500/30 dark:bg-blue-500/15 dark:text-blue-200">
+                <Hash size={10} />
+                Queue Position: {order.queue_position}
+              </span>
+            )}
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-purple-200 bg-purple-50 px-2.5 py-1 text-xs font-semibold text-purple-700 dark:border-purple-500/30 dark:bg-purple-500/15 dark:text-purple-200">
+              <span className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse" />
+              {extendedStatusLabel}
+            </span>
+          </div>
+
           <div className="flex items-center gap-3 mt-2">
             <div className="flex-1 h-2 overflow-hidden rounded-full border border-border bg-muted p-0.5">
               <div className="flex h-full gap-0.5">
@@ -136,11 +170,8 @@ export default function OrderStatusTimeline({ order }: OrderStatusTimelineProps)
                     className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 z-10 border ${
                       status === 'complete'
                         ? 'bg-emerald-50 border-emerald-300 dark:bg-emerald-500/15 dark:border-emerald-500/40'
-                        : status === 'active'
-                          ? 'bg-purple-50 border-purple-300 dark:bg-purple-500/15 dark:border-purple-500/40'
-                          : status === 'pending'
-                            ? 'bg-slate-100 border-slate-200 dark:bg-[#343434] dark:border-[#444444]'
-                            : 'bg-slate-50 border-slate-200 dark:bg-[#2f2f2f] dark:border-[#3f3f3f]'
+                        : status === 'active' ?'bg-purple-50 border-purple-300 dark:bg-purple-500/15 dark:border-purple-500/40'
+                          : status === 'pending' ?'bg-slate-100 border-slate-200 dark:bg-[#343434] dark:border-[#444444]' :'bg-slate-50 border-slate-200 dark:bg-[#2f2f2f] dark:border-[#3f3f3f]'
                     }`}
                   >
                     {status === 'complete' ? (

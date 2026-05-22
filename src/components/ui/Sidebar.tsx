@@ -23,9 +23,12 @@ import {
   RotateCcw,
   ChevronLeft,
   ChevronRight,
+  Eye,
+  HelpCircle,
+  Home,
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import Icon from '@/components/ui/AppIcon';
+
 
 
 interface SidebarProps {
@@ -49,8 +52,9 @@ const navByRole = {
     { label: 'Assigned Tasks', href: '/staff-dashboard/assigned-tasks', icon: ClipboardCheck },
     { label: 'Order Workflow', href: '/staff-dashboard/orders', icon: Package },
     { label: 'Quality Scan (AI)', href: '/staff/quality-scan', icon: Camera },
-    { label: 'AR Visualization', href: '/staff/ar-measurement', icon: Ruler },
+    { label: 'AR Visualization', href: '/staff/ar-visualization', icon: Eye },
     { label: 'Inventory', href: '/staff-dashboard/inventory', icon: ShoppingBag },
+    { label: 'Inquiries', href: '/staff/inquiry', icon: HelpCircle },
     { label: 'Customer Chat', href: '/staff/chat', icon: MessageSquare },
   ],
   admin: [
@@ -59,6 +63,7 @@ const navByRole = {
     { label: 'User Management', href: '/admin/users', icon: Users },
     { label: 'Product Catalog', href: '/catalog', icon: Box },
     { label: 'Order Management', href: '/orders', icon: Package },
+    { label: 'Inquiries', href: '/admin/inquiry', icon: HelpCircle },
     { label: 'Order Chat', href: '/admin/chat', icon: MessageSquare },
     { label: 'Inventory', href: '/admin/inventory', icon: Truck },
     { label: 'Team', href: '/admin/team', icon: Users },
@@ -68,10 +73,10 @@ const navByRole = {
     { label: 'Rework Queue', href: '/admin/rework', icon: RotateCcw },
   ],
   customer: [
-    { label: 'Order History', href: '/customer-dashboard', icon: Package },
-    { label: 'Order Queue', href: '/customer-dashboard/order-status', icon: ClipboardCheck },
+    { label: 'Overview', href: '/customer-dashboard/overview', icon: Home },
+    { label: 'OrderView', href: '/customer-dashboard/order-view', icon: Package },
+    { label: 'Inquiry', href: '/customer-dashboard/inquiry', icon: HelpCircle },
     { label: 'Shop Products', href: '/customer-dashboard/shop', icon: ShoppingBag },
-    { label: 'Inquiry', href: '/support', icon: MessageSquare },
   ],
 };
 
@@ -142,7 +147,7 @@ export default function Sidebar({ role, currentPath, open, onClose, collapsed = 
 
         <nav className="space-y-1">
           {nav.map((item) => {
-            const Icon = item.icon;
+            const NavIcon = item.icon;
             const isActive = activePath === item.href || activePath.startsWith(item.href + '/');
             return (
               <Link
@@ -155,7 +160,7 @@ export default function Sidebar({ role, currentPath, open, onClose, collapsed = 
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
               >
-                <Icon size={18} />
+                <NavIcon size={18} />
                 {!collapsed && <span>{item.label}</span>}
               </Link>
             );
@@ -171,8 +176,6 @@ export default function Sidebar({ role, currentPath, open, onClose, collapsed = 
             {!collapsed && <span>Sign Out</span>}
             <LogOut size={18} />
           </button>
-
-          
         </div>
       </aside>
 
