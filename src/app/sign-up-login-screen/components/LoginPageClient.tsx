@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AppLogo from '@/components/ui/AppLogo';
 import {
-  Eye, EyeOff, Copy, ChevronRight, Loader2, CheckCircle2, Hammer,
+  Eye, EyeOff, ChevronRight, Loader2, CheckCircle2, Hammer,
   Layers, Zap, AlertTriangle, Moon, SunMedium, ArrowLeft, User, Mail, Phone, Lock
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
@@ -18,12 +18,6 @@ type AuthTab = 'login' | 'register' | 'forgot' | 'reset' | 'verify-2fa';
 type LoginForm = { email: string; password: string; remember: boolean };
 type RegisterForm = { fullName: string; email: string; phone: string; password: string; confirmPassword: string };
 type ForgotForm = { email: string };
-
-const demoCredentials: Record<Role, { email: string; password: string; hint: string }> = {
-  staff: { email: 'marcos.reyes@mvcawood.com', password: 'Staff@2026', hint: 'Workshop Worker — access task timer & QA tools' },
-  admin: { email: 'sunita.kapoor@mvcawood.com', password: 'Admin@2026', hint: 'Supervisor — access production dashboard & rework queue' },
-  customer: { email: 'claire.leblanc@gmail.com', password: 'Customer@2026', hint: 'Customer — view order status & inspection photos' },
-};
 
 const roleRedirect: Record<string, string> = {
   staff: '/staff-dashboard',
@@ -43,7 +37,6 @@ export default function LoginPageClient() {
   const { signIn, signUp } = useAuth();
   const supabase = createClient();
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const [role, setRole] = useState<Role>('staff');
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -53,13 +46,10 @@ export default function LoginPageClient() {
   const [pendingEmail, setPendingEmail] = useState('');
   const [pendingPassword, setPendingPassword] = useState('');
   const [resendCooldown, setResendCooldown] = useState(0);
-  const [copied, setCopied] = useState<'email' | 'password' | null>(null);
 
   const { register, handleSubmit, setValue, reset, formState: { errors } } = useForm<LoginForm>({ defaultValues: { remember: false } });
   const { register: regRegister, handleSubmit: handleRegister, watch: watchReg, formState: { errors: regErrors } } = useForm<RegisterForm>();
   const { register: regForgot, handleSubmit: handleForgot, formState: { errors: forgotErrors } } = useForm<ForgotForm>();
-
-  const creds = demoCredentials[role];
 
   useEffect(() => {
     const storedTheme = window.localStorage.getItem('theme') as 'dark' | 'light' | null;
@@ -81,18 +71,6 @@ export default function LoginPageClient() {
   function showMessage(type: 'success' | 'error', message: string) {
     setToast({ type, message });
     window.setTimeout(() => setToast(null), 4000);
-  }
-
-  function autofill() {
-    setValue('email', creds.email);
-    setValue('password', creds.password);
-  }
-
-  function copyField(field: 'email' | 'password') {
-    const val = field === 'email' ? creds.email : creds.password;
-    navigator.clipboard.writeText(val).catch(() => {});
-    setCopied(field);
-    setTimeout(() => setCopied(null), 2000);
   }
 
   function toggleTheme() {
@@ -238,35 +216,6 @@ export default function LoginPageClient() {
                 <div>
                   <h2 className="text-2xl font-bold text-foreground">Welcome back</h2>
                   <p className="text-sm text-muted-foreground mt-1">Sign in to your MVCA account</p>
-                </div>
-
-                {/* Role Selector */}
-                <div className="flex rounded-2xl border border-border bg-muted p-1 gap-1">
-                  {(['staff', 'admin', 'customer'] as Role[]).map(r => (
-                    <button key={r} type="button" onClick={() => setRole(r)} className={`flex-1 rounded-xl py-2 text-xs font-semibold transition-all ${role === r ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
-                      {r.charAt(0).toUpperCase() + r.slice(1)}
-                    </button>
-                  ))}
-                </div>
-
-                {/* Demo Credentials */}
-                <div className="rounded-2xl border border-border bg-muted/50 p-4">
-                  <p className="text-xs text-muted-foreground mb-3 font-medium">Demo credentials</p>
-                  <div className="space-y-2">
-                    {(['email', 'password'] as const).map(field => (
-                      <div key={field} className="flex items-center justify-between gap-2">
-                        <span className="text-xs text-muted-foreground capitalize w-16">{field}</span>
-                        <span className="text-xs text-foreground font-mono flex-1 truncate">{field === 'email' ? creds.email : creds.password}</span>
-                        <button type="button" onClick={() => copyField(field)} className="text-muted-foreground hover:text-foreground transition-colors">
-                          {copied === field ? <CheckCircle2 size={13} className="text-success" /> : <Copy size={13} />}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2 italic">{creds.hint}</p>
-                  <button type="button" onClick={autofill} className="mt-3 w-full rounded-xl border border-border bg-background py-2 text-xs font-semibold text-foreground hover:bg-muted transition-all flex items-center justify-center gap-1">
-                    <ChevronRight size={12} /> Auto-fill credentials
-                  </button>
                 </div>
 
                 <form onSubmit={handleSubmit(onLogin)} className="space-y-4">
